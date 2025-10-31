@@ -86,14 +86,13 @@ class AzureTracker(IssueTracker):
         """List all open issues in the project."""
         wiql = Wiql(
             query=f"""
-            select [System.Id]
-            from WorkItems
-            where [System.IterationPath] = @CurrentIteration('[{self.project_name}]\{self.team_name}') AND 
-            [System.AssignedTo] = @Me AND
+            SELECT [System.Id]
+            FROM WorkItems
+            WHERE [System.IterationPath] = @CurrentIteration('[{self.project_name}]\{self.team_name}') AND [System.AssignedTo] = @Me AND
             ([System.WorkItemType] = 'Product Backlog Item' OR  [System.WorkItemType] = 'Feature' OR
              [System.WorkItemType] = 'Epic' OR [System.WorkItemType] = 'Task' OR [System.WorkItemType] = 'Bug') AND
             NOT ([System.State] = 'Done' OR [System.State] = 'Removed' OR [System.State] = 'Closed')
-            order by [System.ChangedDate] desc"""
+            ORDER BY [System.ChangedDate] DESC"""
         )
         # We limit number of results to 30 on purpose
         wiql_results = self.wit_client.query_by_wiql(wiql).work_items
